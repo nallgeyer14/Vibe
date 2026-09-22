@@ -175,7 +175,7 @@ export default function CreateActivity({ onBack, onPost }: CreateActivityProps) 
                 onClick={() => setVisibility(opt.label)}
                 style={{
                   background: visibility === opt.label ? 'rgba(139,92,246,0.12)' : 'var(--card)',
-                  border: `1.5px solid ${visibility === opt.label ? 'var(--violet-bright)' : 'rgba(139,92,246,0.12)'}`,
+                  border: `1.5px solid ${visibility === opt.label ? 'var(--main-bright)' : 'rgba(139,92,246,0.12)'}`,
                   borderRadius: 16,
                   padding: '14px 16px',
                   display: 'flex',
@@ -193,7 +193,7 @@ export default function CreateActivity({ onBack, onPost }: CreateActivityProps) 
                   <div style={{ color: 'var(--text-muted)', fontSize: 12 }}>{opt.sub}</div>
                 </div>
                 {visibility === opt.label && (
-                  <div style={{ marginLeft: 'auto', color: 'var(--violet-bright)', fontSize: 18 }}>✓</div>
+                  <div style={{ marginLeft: 'auto', color: 'var(--main-bright)', fontSize: 18 }}>✓</div>
                 )}
               </button>
             ))}

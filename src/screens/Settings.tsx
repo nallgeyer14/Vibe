@@ -2,13 +2,13 @@ import React, { useState } from 'react';
 
 interface SettingsProps {
   onBack: () => void;
+  onEditProfile: () => void;
 }
 
 const sections = [
   {
     title: 'Account',
     items: [
-      { icon: '👤', label: 'Edit Profile' },
       { icon: '📱', label: 'Phone Number' },
       { icon: '📧', label: 'Email Address' },
       { icon: '🔑', label: 'Change Password' },
@@ -50,8 +50,11 @@ const sections = [
   },
 ];
 
-export default function Settings({ onBack }: SettingsProps) {
-  const [toggles, setToggles] = useState<Record<string, boolean>>({
+export default function Settings({
+  onBack,
+  onEditProfile,
+}: SettingsProps) {
+    const [toggles, setToggles] = useState<Record<string, boolean>>({
     'Location Settings': true,
     'Show My Interests': true,
     'Private Profile': false,
@@ -107,8 +110,16 @@ export default function Settings({ onBack }: SettingsProps) {
                     borderBottom: i < section.items.length - 1 ? '1px solid rgba(255,255,255,0.05)' : 'none',
                     cursor: 'pointer',
                   }}
-                  onClick={() => 'toggle' in item && toggle(item.label)}
-                >
+                  onClick={() => {
+                    if (item.label === 'Edit Profile') {
+                      onEditProfile();
+                      return;
+                    }
+                  
+                    if ('toggle' in item) {
+                      toggle(item.label);
+                    }
+                  }}                >
                   <span style={{ fontSize: 18, width: 24, textAlign: 'center' }}>{item.icon}</span>
                   <span style={{ flex: 1, color: 'var(--text)', fontSize: 15, fontWeight: 500 }}>{item.label}</span>
                   {'toggle' in item ? (

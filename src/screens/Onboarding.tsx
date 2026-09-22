@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { registerAndLoginUser, createProfile, updateProfile } from '../services/api';
 
 interface OnboardingProps {
   onComplete: () => void;
@@ -10,14 +11,79 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
   const [age, setAge] = useState('');
   const [bio, setBio] = useState('');
   const [socialPref, setSocialPref] = useState('');
+  const [friendPref, setFriendPref] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [school, setSchool] = useState('');
+
 
   const socialOptions = [
     { label: 'Introvert', sub: 'Prefer small groups & deep convos', icon: '🌙' },
     { label: 'Ambivert', sub: 'Good in both big and small settings', icon: '✨' },
     { label: 'Extrovert', sub: 'Love big energy and meeting everyone', icon: '🔥' },
   ];
+  const friendOptions = [
+    { label: 'Activity partners', sub: 'Hiking, gym, sports, and more', icon: '🏅'},
+    { label: 'Genuine friendships', sub: 'Looking for life-long friendships', icon: '🤝'},
+    { label: 'Study buddies', sub: 'School, work, or personal projects', icon: '📚'},
+    { label: 'Gaming crew', sub: 'Console, PC, or mobile gaming', icon: '🎮'},
+    { label: 'All of the above', sub: 'I’m open to meeting all kinds of friends', icon: '👐'},
+  ];
 
   const steps = [
+    (
+      <div className="flex flex-col gap-5">
+        <div
+          style={{
+            margin: 20,
+          }}
+        >
+          <h2 className="text-2xl font-bold text-black/70 mb-2">
+            Create your account
+          </h2>
+          <p className="text-black/70">
+            Sign up to start finding your people.
+          </p>
+        </div>
+    
+        <div
+          style={{
+            marginLeft: 25,
+            marginRight: 25,
+            
+          }}
+        >
+          <label className="block text-sm text-black/70 mb-2">
+            Email
+          </label>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="you@example.com"
+            className="vibe-input"
+          />
+        </div>
+    
+        <div
+          style={{
+            marginLeft: 25,
+            marginRight: 25,
+          }}
+        >
+          <label className="block text-sm text-black/70 mb-2">
+            Password
+          </label>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Create a password"
+            className="vibe-input"
+          />
+        </div>
+      </div>
+    ),
     // Step 0: Photo + Name
     <div key="0" style={{ display: 'flex', flexDirection: 'column', flex: 1, padding: '0 28px' }}>
       <div style={{ marginBottom: 32 }}>
@@ -98,6 +164,8 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
           <input
             className="vibe-input"
             placeholder="e.g. Computer Science @ UCLA"
+            value={school}
+            onChange={(e) => setSchool(e.target.value)}
           />
         </div>
       </div>
@@ -133,24 +201,31 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
           What kind of friends are you looking for?
         </label>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-          {['Activity partners', 'Genuine friendships', 'Study buddies', 'Gaming crew', 'All of the above'].map(opt => (
+           {friendOptions.map(opt => (
             <button
-              key={opt}
+              key={opt.label}
+              onClick={() => setFriendPref(opt.label)}
               style={{
-                background: 'var(--card)',
-                border: '1.5px solid rgba(139, 92, 246, 0.2)',
-                borderRadius: 14,
-                padding: '14px 16px',
-                color: 'var(--text)',
-                fontSize: 15,
-                fontWeight: 500,
-                cursor: 'pointer',
-                textAlign: 'left',
-                fontFamily: 'Inter, sans-serif',
-                transition: 'border-color 0.2s, background 0.2s',
-              }}
-            >
-              {opt}
+              background: friendPref === opt.label ? 'rgba(61, 111, 168, 0.15)' : 'var(--card)',
+              border: `1.5px solid ${friendPref === opt.label ? 'var(--main-bright)' : 'rgba(139, 92, 246, 0.15)'}`,
+              borderRadius: 18,
+              padding: '18px 20px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 16,
+              cursor: 'pointer',
+              textAlign: 'left',
+              fontFamily: 'Inter, sans-serif',
+              transition: 'all 0.2s',
+            }}
+          >
+            <span style={{ fontSize: 28, lineHeight: 1 }}>{opt.icon}</span>
+            <div>
+              <div style={{ color: 'var(--text)', fontSize: 17, fontWeight: 700, marginBottom: 3 }}>
+                {opt.label}
+              </div>
+              <div style={{ color: 'var(--text-muted)', fontSize: 13 }}>{opt.sub}</div>
+            </div>
             </button>
           ))}
         </div>
@@ -174,8 +249,8 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
             key={opt.label}
             onClick={() => setSocialPref(opt.label)}
             style={{
-              background: socialPref === opt.label ? 'rgba(139, 92, 246, 0.15)' : 'var(--card)',
-              border: `1.5px solid ${socialPref === opt.label ? 'var(--violet-bright)' : 'rgba(139, 92, 246, 0.15)'}`,
+              background: socialPref === opt.label ? 'rgba(61, 111, 168, 0.15)' : 'var(--card)',
+              border: `1.5px solid ${socialPref === opt.label ? 'var(--main-bright)' : 'rgba(139, 92, 246, 0.15)'}`,
               borderRadius: 18,
               padding: '18px 20px',
               display: 'flex',
@@ -250,8 +325,84 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
       <div style={{ padding: '20px 28px 40px' }}>
         <button
           className="btn-primary"
-          onClick={() => isLast ? onComplete() : setStep(s => s + 1)}
-          style={{ fontSize: 17 }}
+          onClick={async () => {
+            if (step === 0) {
+              try {
+                const auth = await registerAndLoginUser(email, password);
+          
+                localStorage.setItem('vibe_token', auth.access_token);
+                localStorage.setItem('vibe_user_id', String(auth.user_id));
+          
+                setStep(s => s + 1);
+              } catch (error) {
+                console.error('Account creation failed:', error);
+                alert(error instanceof Error ? error.message : 'Account creation failed');
+              }
+          
+              return;
+            }
+          
+            if (step === 1) {
+              try {
+                const token = localStorage.getItem('vibe_token');
+            
+                if (!token) {
+                  alert('You are not logged in.');
+                  return;
+                }
+            
+                await createProfile(token, {
+                  name,
+                  age: Number(age),
+                  school,
+                });
+            
+                setStep(s => s + 1);
+              } catch (error) {
+                console.error('Profile creation failed:', error);
+                alert(error instanceof Error ? error.message : 'Profile creation failed');
+              }
+            
+              return;
+            }
+            
+            if (step === 2) {
+              setStep(s => s + 1);
+              return;
+            }
+            if (step === 3) {
+              try {
+                const token = localStorage.getItem('vibe_token');
+            
+                if (!token) {
+                  alert('You are not logged in.');
+                  return;
+                }
+            
+                await updateProfile(token, {
+                  name,
+                  age: Number(age),
+                  school,
+                  bio,
+                  social_preferences: socialPref,
+                  looking_for: friendPref,
+                });
+            
+                onComplete();
+              } catch (error) {
+                console.error('Profile update failed:', error);
+                alert(error instanceof Error ? error.message : 'Profile update failed');
+              }
+            
+              return;
+            }
+            if (isLast) {
+              onComplete();
+            } else {
+              setStep(s => s + 1);
+            }
+          }}   
+         style={{ fontSize: 17 }}
         >
           {isLast ? 'Choose Interests →' : 'Continue →'}
         </button>
@@ -259,3 +410,4 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
     </div>
   );
 }
+ 

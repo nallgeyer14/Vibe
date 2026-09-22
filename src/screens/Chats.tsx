@@ -116,7 +116,7 @@ export default function Chats({ onChatOpen }: ChatsProps) {
                 {chat.unread > 0 && (
                   <div style={{
                     marginLeft: 8,
-                    background: 'var(--violet-bright)',
+                    background: 'var(--main-bright)',
                     borderRadius: '50%',
                     minWidth: 20,
                     height: 20,

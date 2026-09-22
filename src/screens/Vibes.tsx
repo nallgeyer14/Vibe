@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { profiles, Profile } from '../data';
 
 interface VibesProps {
@@ -33,6 +33,42 @@ function SwipeCard({ profile, onSwipe, isTop }: { profile: Profile; onSwipe: (di
   const [isDragging, setIsDragging] = useState(false);
   const [exiting, setExiting] = useState<'left' | 'right' | null>(null);
   const startX = useRef(0);
+  const lightText = true;
+  
+  useEffect(() => {
+  const img = new Image();
+  img.crossOrigin = 'anonymous';
+  img.src = profile.photo;
+
+  img.onload = () => {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+
+    if (!ctx) return;
+
+    canvas.width = 40;
+    canvas.height = 40;
+
+    ctx.drawImage(img, 0, 0, 40, 40);
+
+    // Sample the lower portion where the profile text sits.
+    const imageData = ctx.getImageData(0, 24, 40, 16).data;
+
+    let brightness = 0;
+    let pixels = 0;
+
+    for (let i = 0; i < imageData.length; i += 4) {
+      const r = imageData[i];
+      const g = imageData[i + 1];
+      const b = imageData[i + 2];
+
+      brightness += (r * 299 + g * 587 + b * 114) / 1000;
+      pixels++;
+    }
+
+    const averageBrightness = brightness / pixels;
+  };
+}, [profile.photo]);
 
   const handlePointerDown = (e: React.PointerEvent) => {
     if (!isTop) return;
@@ -106,9 +142,9 @@ function SwipeCard({ profile, onSwipe, isTop }: { profile: Profile; onSwipe: (di
           draggable={false}
           style={{
             width: '100%',
-            height: '62%',
+            height: '100%',
             objectFit: 'cover',
-            display: 'block',
+            display: 'flex',
             pointerEvents: 'none',
           }}
         />
@@ -153,13 +189,21 @@ function SwipeCard({ profile, onSwipe, isTop }: { profile: Profile; onSwipe: (di
         }} />
 
         {/* Info */}
-        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '20px 22px 24px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 }}>
+        <div
+          style={{
+            position: 'absolute',
+            bottom: 60,
+            left: 0,
+            right: 0,
+            padding: '20px 22px 24px',
+          }}
+        >          
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 }}>
             <div>
-              <div style={{ fontSize: 26, fontWeight: 800, color: 'var(--text)', letterSpacing: -0.5, lineHeight: 1.1 }}>
+              <div style={{ fontSize: 26, fontWeight: 800, color: lightText ? '#FFFFFF' : '#1F2933', letterSpacing: -0.5, lineHeight: 1.1 }}>
                 {profile.name}, {profile.age}
               </div>
-              <div style={{ color: 'var(--text-muted)', fontSize: 14, marginTop: 3 }}>{profile.school}</div>
+              <div style={{color: lightText ? 'rgba(255,255,255,0.82)' : '#66727D', fontSize: 14, marginTop: 3 }}>{profile.school}</div>
             </div>
             {/* Compatibility */}
             <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -182,19 +226,19 @@ function SwipeCard({ profile, onSwipe, isTop }: { profile: Profile; onSwipe: (di
 
           {/* Shared interests */}
           <div style={{ marginBottom: 8 }}>
-            <div style={{ fontSize: 11, color: 'var(--orange)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 7 }}>
+            <div style={{ fontSize: 11, color: 'var(--main-bright)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 7 }}>
               You both like
             </div>
             <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
               {profile.interests.slice(0, 3).map(tag => (
                 <span key={tag} style={{
-                  background: 'rgba(255, 122, 48, 0.15)',
-                  border: '1px solid rgba(255, 122, 48, 0.3)',
+                  background: 'rgba(61, 111, 168, 0.15)', 
+                  border: '1px solid rgba(61, 111, 168, 1)',
                   borderRadius: 100,
                   padding: '4px 11px',
                   fontSize: 12,
                   fontWeight: 600,
-                  color: 'var(--orange-bright)',
+                  color: 'var(--main-bright)',
                 }}>
                   {tag}
                 </span>
@@ -227,20 +271,38 @@ export default function Vibes({ onMatch }: VibesProps) {
   };
 
   return (
-    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', background: 'var(--bg)', overflow: 'hidden' }}>
-      {/* Header */}
-      <div style={{ padding: '56px 24px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <div
+        style={{
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          background: 'var(--bg)',
+          overflow: 'hidden',
+          paddingBottom: 88,
+          position: 'relative',
+        }}
+      >      {/* Header */}
+      <div style={{ padding: '50px 24px 1px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div>
-          <h1 style={{ fontSize: 28, fontWeight: 900, color: 'var(--text)', margin: 0, letterSpacing: -1 }} className="vg-text">
+          <h1 style={{
+            fontFamily: "'Satisfy', cursive",
+            fontSize: 55,
+            fontWeight: 400,
+            letterSpacing: 0,
+            lineHeight: 1,
+            marginBottom: 0,
+            color: 'var(--violet)',
+            transform: 'translateY(-20px)',
+          }}>
             Vibes
           </h1>
-          <p style={{ color: 'var(--text-muted)', fontSize: 13, margin: '2px 0 0' }}>Swipe to connect</p>
         </div>
         <button style={{
           background: 'var(--card-el)',
           border: '1px solid rgba(139,92,246,0.2)',
           borderRadius: 14,
-          padding: '10px 14px',
+          padding: '1px 5px',
+          marginBottom: 50,
           color: 'var(--text-muted)',
           fontSize: 14,
           cursor: 'pointer',
@@ -251,15 +313,22 @@ export default function Vibes({ onMatch }: VibesProps) {
       </div>
 
       {/* Card stack */}
-      <div style={{ flex: 1, padding: '0 20px', position: 'relative', minHeight: 0 }}>
-        {deck.length === 0 ? (
+         <div
+            style={{
+              flex: 1,
+              position: 'relative',
+              minHeight: 0,
+              margin: '0 20px',
+            }}
+          >
+          {deck.length === 0 ? (
           <div style={{
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
             height: '100%',
-            gap: 16,
+            gap: 1,
           }}>
             <div style={{ fontSize: 48 }}>✨</div>
             <div style={{ color: 'var(--text)', fontSize: 20, fontWeight: 700 }}>You've seen everyone!</div>
@@ -295,8 +364,20 @@ export default function Vibes({ onMatch }: VibesProps) {
 
       {/* Action buttons */}
       {deck.length > 0 && (
-        <div style={{ padding: '16px 20px 100px', display: 'flex', justifyContent: 'center', gap: 20, alignItems: 'center' }}>
-          <button
+        <div
+          style={{
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            bottom: 105,
+            display: 'flex',
+            justifyContent: 'center',
+            gap: 20,
+            alignItems: 'center',
+            zIndex: 30,
+          }}
+        >          
+        <button
             onClick={() => triggerSwipe('left')}
             style={{
               width: 60,
@@ -347,7 +428,7 @@ export default function Vibes({ onMatch }: VibesProps) {
               justifyContent: 'center',
               cursor: 'pointer',
               fontSize: 22,
-              boxShadow: '0 4px 20px rgba(139, 92, 246, 0.4)',
+              boxShadow: '0 4px 20px rgba(61, 111, 168, 0.15)',
               transition: 'transform 0.1s',
             }}
             onMouseDown={e => (e.currentTarget.style.transform = 'scale(0.9)')}

@@ -1,5 +1,9 @@
 import React, { useState } from 'react';
 import { interests } from '../data';
+import {
+  getInterests,
+  setUserInterests,
+} from '../services/api';
 
 interface InterestsProps {
   onComplete: () => void;
@@ -7,7 +11,7 @@ interface InterestsProps {
 
 export default function Interests({ onComplete }: InterestsProps) {
   const [selected, setSelected] = useState<Set<string>>(new Set(['Music', 'Hiking', 'Food']));
-
+  const [isSaving, setIsSaving] = useState(false);
   const toggle = (label: string) => {
     setSelected(prev => {
       const next = new Set(prev);
@@ -50,7 +54,7 @@ export default function Interests({ onComplete }: InterestsProps) {
                 onClick={() => toggle(label)}
                 style={{
                   background: isSelected ? 'var(--gradient)' : 'var(--card)',
-                  border: isSelected ? 'none' : '1px solid rgba(139, 92, 246, 0.18)',
+                  border: isSelected ? 'none' : '1px solid rgba(61, 111, 168, 0.18)',
                   borderRadius: 16,
                   padding: '16px 8px',
                   display: 'flex',
@@ -61,7 +65,7 @@ export default function Interests({ onComplete }: InterestsProps) {
                   fontFamily: 'Inter, sans-serif',
                   transition: 'all 0.2s',
                   transform: isSelected ? 'scale(1.02)' : 'scale(1)',
-                  boxShadow: isSelected ? '0 4px 20px rgba(139, 92, 246, 0.3)' : 'none',
+                  boxShadow: isSelected ? '0 4px 20px rgba(61, 111, 168, 0.3)' : 'none',
                 }}
               >
                 <span style={{ fontSize: 26, lineHeight: 1 }}>{emoji}</span>
@@ -89,11 +93,49 @@ export default function Interests({ onComplete }: InterestsProps) {
         </div>
         <button
           className="btn-primary"
-          onClick={onComplete}
-          disabled={selected.size < 3}
-          style={{ fontSize: 17, opacity: selected.size < 3 ? 0.5 : 1 }}
-        >
-          Find My Vibe →
+          onClick={async () => {
+            try {
+              const token = localStorage.getItem('vibe_token');
+
+              if (!token) {
+                alert('You are not logged in.');
+                return;
+              }
+
+              setIsSaving(true);
+
+              const backendInterests = await getInterests();
+
+              const selectedIds = backendInterests
+                .filter(interest => selected.has(interest.name))
+                .map(interest => interest.id);
+
+              if (selectedIds.length < 3) {
+                alert('Please select at least 3 interests.');
+                return;
+              }
+
+              await setUserInterests(token, selectedIds);
+
+              onComplete();
+            } catch (error) {
+              console.error('Interest save failed:', error);
+              alert(
+                error instanceof Error
+                  ? error.message
+                  : 'Failed to save interests'
+              );
+            } finally {
+              setIsSaving(false);
+            }
+          }}
+          disabled={selected.size < 3 || isSaving}
+          style={{
+            fontSize: 17,
+            opacity: selected.size < 3 || isSaving ? 0.5 : 1,
+          }}
+          >
+          {isSaving ? 'Saving...' : 'Find My Vibe →'}
         </button>
       </div>
     </div>

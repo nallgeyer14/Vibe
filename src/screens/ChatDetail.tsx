@@ -36,7 +36,7 @@ export default function ChatDetail({ chatId, onBack }: ChatDetailProps) {
         alignItems: 'center',
         gap: 14,
         borderBottom: '1px solid rgba(255,255,255,0.06)',
-        background: 'rgba(18,13,28,0.95)',
+        background: 'rgba(61, 111, 168,0.25)',
         backdropFilter: 'blur(20px)',
         flexShrink: 0,
       }}>
@@ -45,7 +45,7 @@ export default function ChatDetail({ chatId, onBack }: ChatDetailProps) {
           style={{
             background: 'none',
             border: 'none',
-            color: 'var(--violet-bright)',
+            color: 'var(--main-bright)',
             cursor: 'pointer',
             fontSize: 18,
             padding: '4px 8px 4px 0',
@@ -74,7 +74,7 @@ export default function ChatDetail({ chatId, onBack }: ChatDetailProps) {
         )}
         <div>
           <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--text)' }}>{chat.name}</div>
-          <div style={{ fontSize: 12, color: 'var(--violet-bright)' }}>
+          <div style={{ fontSize: 12, color: 'var(--main-bright)' }}>
             {chat.isGroup ? `${chat.messages.length} members` : 'Active now'}
           </div>
         </div>
@@ -137,7 +137,7 @@ export default function ChatDetail({ chatId, onBack }: ChatDetailProps) {
       <div style={{
         padding: '12px 16px 36px',
         borderTop: '1px solid rgba(255,255,255,0.06)',
-        background: 'rgba(18,13,28,0.95)',
+        background: 'rgba(61, 111, 168,0.25)',
         backdropFilter: 'blur(20px)',
         display: 'flex',
         alignItems: 'center',

@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
-import { Profile as ProfileData, chats } from './data';
+import React, { useEffect, useState } from 'react';
+import { profiles, chats } from './data';
 import BottomNav from './components/BottomNav';
 import Welcome from './screens/Welcome';
 import Onboarding from './screens/Onboarding';
 import Interests from './screens/Interests';
+import Login from './screens/Login'
 import Vibes from './screens/Vibes';
 import MatchScreen from './screens/Match';
 import Activities from './screens/Activities';
@@ -13,21 +14,37 @@ import ChatsScreen from './screens/Chats';
 import ChatDetail from './screens/ChatDetail';
 import ProfileScreen from './screens/Profile';
 import Settings from './screens/Settings';
+import EditProfile from './screens/EditProfile';
+import type { Profile } from './models/profiles';
+import { checkBackend } from './services/api';
 
-type AuthScreen = 'welcome' | 'onboarding' | 'interests';
+
+
+type AuthScreen = 'welcome' | 'login' | 'onboarding' | 'interests';
 type Tab = 'vibes' | 'activities' | 'chats' | 'profile';
 type SubScreen =
-  | { type: 'match'; profile: ProfileData }
+  | { type: 'match'; profile: Profile }
   | { type: 'activity-detail'; activityId: number }
   | { type: 'create-activity' }
   | { type: 'chat-detail'; chatId: number }
-  | { type: 'settings' };
+  | { type: 'settings' }
+  | { type: 'edit-profile' };
 
 export default function App() {
+  useEffect(() => {
+    checkBackend()
+      .then((data) => {
+        console.log('Backend:', data);
+      })
+      .catch((error) => {
+        console.error('Backend connection failed:', error);
+      });
+  }, []);
   const [authScreen, setAuthScreen] = useState<AuthScreen | null>('welcome');
   const [activeTab, setActiveTab] = useState<Tab>('vibes');
   const [subScreen, setSubScreen] = useState<SubScreen | null>(null);
-  const [matchProfile, setMatchProfile] = useState<ProfileData | null>(null);
+  const [matchProfile, setMatchProfile] = useState<Profile | null>(null);
+  const [profileVersion, setProfileVersion] = useState(0);
 
   const totalUnread = chats.reduce((sum, c) => sum + c.unread, 0);
 
@@ -37,7 +54,17 @@ export default function App() {
       <div className="phone">
         <Welcome
           onGetStarted={() => setAuthScreen('onboarding')}
-          onLogin={() => setAuthScreen(null)}
+          onLogin={() => setAuthScreen('login')}
+        />
+      </div>
+    );
+  }
+  if (authScreen === 'login') {
+    return (
+      <div className="phone">
+        <Login
+          onBack={() => setAuthScreen('welcome')}
+          onLoginSuccess={() => setAuthScreen(null)}
         />
       </div>
     );
@@ -58,7 +85,7 @@ export default function App() {
   }
 
   // Main app
-  const handleMatch = (profile: ProfileData) => {
+  const handleMatch = (profile: Profile) => {
     setMatchProfile(profile);
     setSubScreen({ type: 'match', profile });
   };
@@ -113,7 +140,22 @@ export default function App() {
       }
       if (subScreen.type === 'settings') {
         return (
-          <Settings onBack={() => setSubScreen(null)} />
+          <Settings
+            onBack={() => setSubScreen(null)}
+            onEditProfile={() => setSubScreen({ type: 'edit-profile' })}
+          />
+        );
+      }
+      
+      if (subScreen.type === 'edit-profile') {
+        return (
+          <EditProfile
+            onBack={() => setSubScreen(null)}
+            onSaved={() => {
+              setProfileVersion(version => version + 1);
+              setSubScreen(null);
+            }}
+          />
         );
       }
     }
@@ -135,23 +177,42 @@ export default function App() {
             onChatOpen={id => setSubScreen({ type: 'chat-detail', chatId: id })}
           />
         );
-      case 'profile':
-        return (
-          <ProfileScreen
-            onSettings={() => setSubScreen({ type: 'settings' })}
-          />
-        );
+        case 'profile':
+          return (
+            <ProfileScreen
+              key={profileVersion}
+              onSettings={() => setSubScreen({ type: 'settings' })}
+              onEditProfile={() => setSubScreen({ type: 'edit-profile' })}
+            />
+          );
     }
   };
 
-  const isFullScreen = subScreen?.type === 'match' || subScreen?.type === 'create-activity' || subScreen?.type === 'settings';
+  const isFullScreen =
+    subScreen?.type === 'match' ||
+    subScreen?.type === 'create-activity' ||
+    subScreen?.type === 'settings' ||
+    subScreen?.type === 'edit-profile';
+  
   const hidNav = subScreen?.type === 'activity-detail' || subScreen?.type === 'chat-detail' || isFullScreen;
 
   return (
     <div className="phone">
-      <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+      <div
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          overflow: 'hidden',
+        }}
+      >
         {renderContent()}
       </div>
+  
       {!hidNav && (
         <BottomNav
           activeTab={activeTab}

@@ -20,7 +20,17 @@ export default function ActivityDetail({ activityId, onBack, onChat }: ActivityD
   const spotsLeft = activity.max - activity.joined - (joined ? 1 : 0);
 
   return (
-    <div className="screen scroll-y" style={{ background: 'var(--bg)' }}>
+    <div
+      className="screen"
+      style={{
+        background: 'var(--bg)',
+        position: 'absolute',
+        inset: 0,
+        display: 'flex',
+        flexDirection: 'column',
+        overflow: 'hidden',
+      }}
+    >
       {/* Header image area */}
       <div style={{
         height: 220,
@@ -73,7 +83,15 @@ export default function ActivityDetail({ activityId, onBack, onChat }: ActivityD
       </div>
 
       {/* Content */}
-      <div style={{ padding: '24px 24px 120px' }}>
+      {/* Content */}
+        <div
+          className="scroll-y"
+          style={{
+            flex: 1,
+            minHeight: 0,
+            padding: '24px 24px 32px',
+          }}
+        >
         <h1 style={{ fontSize: 28, fontWeight: 900, color: 'var(--text)', margin: '0 0 8px', letterSpacing: -0.5 }}>
           {activity.title}
         </h1>
@@ -96,7 +114,7 @@ export default function ActivityDetail({ activityId, onBack, onChat }: ActivityD
         <div style={{ background: 'var(--card)', borderRadius: 16, padding: '16px 18px', marginBottom: 20, border: '1px solid rgba(139,92,246,0.12)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
             <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)' }}>Spots remaining</span>
-            <span style={{ fontSize: 13, fontWeight: 700, color: spotsLeft <= 2 ? 'var(--orange)' : 'var(--violet-bright)' }}>
+            <span style={{ fontSize: 13, fontWeight: 700, color: spotsLeft <= 2 ? 'var(--orange)' : 'var(--main-bright)' }}>
               {spotsLeft} of {activity.max}
             </span>
           </div>
@@ -132,7 +150,7 @@ export default function ActivityDetail({ activityId, onBack, onChat }: ActivityD
               borderRadius: 100,
               padding: '5px 12px',
               fontSize: 12,
-              color: 'var(--violet-bright)',
+              color: 'var(--main-bright)',
               fontWeight: 600,
             }}>
               Message
@@ -184,19 +202,22 @@ export default function ActivityDetail({ activityId, onBack, onChat }: ActivityD
         </div>
       </div>
 
-      {/* Fixed bottom buttons */}
-      <div style={{
-        position: 'fixed',
-        bottom: 0,
-        left: 0,
-        right: 0,
-        padding: '16px 24px 36px',
-        background: 'rgba(11,9,16,0.95)',
-        backdropFilter: 'blur(20px)',
-        borderTop: '1px solid rgba(139,92,246,0.1)',
-        display: 'flex',
-        gap: 12,
-      }}>
+      {/* Bottom action bar */}
+      <div
+    style={{
+      flexShrink: 0,
+      width: '100%',
+      maxWidth: '100%',
+      padding: '16px 24px 36px',
+      background: 'rgba(244, 241, 232, 0.98)',
+      backdropFilter: 'blur(20px)',
+      borderTop: '1px solid rgba(61, 111, 168, 0.12)',
+      display: 'flex',
+      gap: 12,
+      zIndex: 20,
+      boxSizing: 'border-box',
+    }}
+    >    
         {joined ? (
           <>
             <button

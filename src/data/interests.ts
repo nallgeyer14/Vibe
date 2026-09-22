@@ -1,0 +1,23 @@
+export const interests = [
+    { label: 'Fitness', emoji: '💪' },
+    { label: 'Gaming', emoji: '🎮' },
+    { label: 'Cars', emoji: '🚗' },
+    { label: 'Music', emoji: '🎵' },
+    { label: 'Sports', emoji: '⚽' },
+    { label: 'Technology', emoji: '💻' },
+    { label: 'Food', emoji: '🍜' },
+    { label: 'Movies', emoji: '🎬' },
+    { label: 'Hiking', emoji: '🥾' },
+    { label: 'Art', emoji: '🎨' },
+    { label: 'Travel', emoji: '✈️' },
+    { label: 'Photography', emoji: '📷' },
+    { label: 'Reading', emoji: '📚' },
+    { label: 'Coffee', emoji: '☕' },
+    { label: 'Concerts', emoji: '🎤' },
+    { label: 'Skateboarding', emoji: '🛹' },
+    { label: 'Cooking', emoji: '🧑‍🍳' },
+    { label: 'Fashion', emoji: '👟' },
+    { label: 'Basketball', emoji: '🏀' },
+    { label: 'Anime', emoji: '⛩️' },
+  ];
+  
