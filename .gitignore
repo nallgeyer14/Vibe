@@ -1,22 +1,21 @@
-node_modules/
-dist/
-build/
-.cache/
-.env*
-.vite/
-vite.config.*.timestamp-*
-*.tsbuildinfo
-*-debug.log*
-logs/
-*.log
-.claude-replay.*
-.tmp-*
-/.figma/design-context/
-
-# Platform-managed agentplat state, not project source. In the
-# client-initiated single-repo workspace layout (make's `Path: "."` spec) the
-# repo root IS the workspace root, so these land inside this repo rather than
-# beside it.
-/.plugins/
-/.opencode-skills/
+# macOS
 .DS_Store
+
+# Frontend
+Vibe-frontend/node_modules/
+Vibe-frontend/dist/
+
+# Backend
+Vibe-backend/.venv/
+Vibe-backend/__pycache__/
+Vibe-backend/**/__pycache__/
+Vibe-backend/.pytest_cache/
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# Python
+*.py[cod]
+.vite/
